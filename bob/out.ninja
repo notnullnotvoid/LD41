@@ -1,0 +1,70 @@
+ninja_required_version = 1.3
+
+builddir = build
+
+#partial option sets
+common = -I. -ISDL2 -Isoloud -Ilib -mmacosx-version-min=10.10.0 -DLD41_DEBUG
+cppflags = -std=c++11 -stdlib=libc++
+cflags = -std=c11
+
+libflags = $common -Ofast -DWITH_SDL2
+srcflags = $common -Wall -Wno-unused-const-variable -Wno-switch -Wno-macro-redefined -Ofast -g
+linkflags = -lc++ -lSDL2 -headerpad_max_install_names
+#linkflags = -F "$HOME/Library/Frameworks" -framework SDL2 -lc++
+
+rule lib
+    command = clang -MMD -MF $out.d $libflags $cppflags -c $in -o $out
+    description = Building library file $in
+    depfile = $out.d
+
+rule clib
+    command = clang -MMD -MF $out.d $libflags $cflags -c $in -o $out
+    description = Building library file $in
+    depfile = $out.d
+
+rule src
+    command = clang -MMD -MF $out.d $srcflags $cppflags -c $in -o $out
+    description = Building source file $in
+    depfile = $out.d
+
+rule link
+    command = clang $linkflags -mmacosx-version-min=10.10.0 $in -o $out
+#    command = ld -demangle -dynamic -arch x86_64 -macosx_version_min 10.10.0 -o $out $linkflags $in -lSystem
+    description = Linking executable $out
+
+build $builddir/soloud_core_filterops.o: lib lib/soloud_core_filterops.cpp
+build $builddir/soloud_fft_lut.o: lib lib/soloud_fft_lut.cpp
+build $builddir/soloud_bassboostfilter.o: lib lib/soloud_bassboostfilter.cpp
+build $builddir/soloud_echofilter.o: lib lib/soloud_echofilter.cpp
+build $builddir/soloud_core_voicegroup.o: lib lib/soloud_core_voicegroup.cpp
+build $builddir/soloud_bus.o: lib lib/soloud_bus.cpp
+build $builddir/soloud_fader.o: lib lib/soloud_fader.cpp
+build $builddir/soloud_file.o: lib lib/soloud_file.cpp
+build $builddir/soloud_fftfilter.o: lib lib/soloud_fftfilter.cpp
+build $builddir/soloud.o: lib lib/soloud.cpp
+build $builddir/soloud_dcremovalfilter.o: lib lib/soloud_dcremovalfilter.cpp
+build $builddir/soloud_lofifilter.o: lib lib/soloud_lofifilter.cpp
+build $builddir/soloud_audiosource.o: lib lib/soloud_audiosource.cpp
+build $builddir/soloud_flangerfilter.o: lib lib/soloud_flangerfilter.cpp
+build $builddir/soloud_fft.o: lib lib/soloud_fft.cpp
+build $builddir/soloud_core_setters.o: lib lib/soloud_core_setters.cpp
+build $builddir/soloud_core_voiceops.o: lib lib/soloud_core_voiceops.cpp
+build $builddir/soloud_wavstream.o: lib lib/soloud_wavstream.cpp
+build $builddir/stb_image.o: lib lib/stb_image.cpp
+build $builddir/soloud_sdl.o: lib lib/soloud_sdl.cpp
+build $builddir/soloud_filter.o: lib lib/soloud_filter.cpp
+build $builddir/soloud_core_faderops.o: lib lib/soloud_core_faderops.cpp
+build $builddir/soloud_core_basicops.o: lib lib/soloud_core_basicops.cpp
+build $builddir/soloud_wav.o: lib lib/soloud_wav.cpp
+build $builddir/soloud_thread.o: lib lib/soloud_thread.cpp
+build $builddir/soloud_core_getters.o: lib lib/soloud_core_getters.cpp
+build $builddir/soloud_biquadresonantfilter.o: lib lib/soloud_biquadresonantfilter.cpp
+build $builddir/soloud_core_3d.o: lib lib/soloud_core_3d.cpp
+build $builddir/stb_vorbis.o: clib lib/stb_vorbis.c
+build $builddir/soloud_sdl_dll.o: clib lib/soloud_sdl_dll.c
+
+build $builddir/blit.o: src ./blit.cpp
+build $builddir/std.o: src ./std.cpp
+build $builddir/main.o: src ./main.cpp
+
+build game: link $builddir/main.o $builddir/std.o $builddir/blit.o $builddir/soloud_sdl_dll.o $builddir/stb_vorbis.o $builddir/soloud_core_3d.o $builddir/soloud_biquadresonantfilter.o $builddir/soloud_core_getters.o $builddir/soloud_thread.o $builddir/soloud_wav.o $builddir/soloud_core_basicops.o $builddir/soloud_core_faderops.o $builddir/soloud_filter.o $builddir/soloud_sdl.o $builddir/stb_image.o $builddir/soloud_wavstream.o $builddir/soloud_core_voiceops.o $builddir/soloud_core_setters.o $builddir/soloud_fft.o $builddir/soloud_flangerfilter.o $builddir/soloud_audiosource.o $builddir/soloud_lofifilter.o $builddir/soloud_dcremovalfilter.o $builddir/soloud.o $builddir/soloud_fftfilter.o $builddir/soloud_file.o $builddir/soloud_fader.o $builddir/soloud_bus.o $builddir/soloud_core_voicegroup.o $builddir/soloud_echofilter.o $builddir/soloud_bassboostfilter.o $builddir/soloud_fft_lut.o $builddir/soloud_core_filterops.o

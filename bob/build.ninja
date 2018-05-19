@@ -1,0 +1,31 @@
+ninja_required_version = 1.8
+
+builddir = build
+
+#partion option sets
+ver = -std=c++1z -stdlib=libc++
+libflags = $ver -Ofast -I. -Ilib
+cppflags = $ver -Wall -Ofast -I. -Ilib
+libs = -lc++ -lglfw -framework OpenGL
+
+rule lib
+    command = clang -MMD -MF $out.d $libflags -c $in -o $out
+    description = Building library file $in
+    depfile = $out.d
+
+rule cc
+    command = clang -MMD -MF $out.d $cppflags -c $in -o $out
+    description = Building source file $in
+    depfile = $out.d
+
+rule link
+    command = clang $libs $in -o $out
+    description = Linking executable $out
+
+src = ..
+
+build $builddir/main.cpp.o: cc $src/main.cpp
+
+build $exe: link  $builddir/main.cpp.o 
+
+default $exe

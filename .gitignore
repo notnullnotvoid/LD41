@@ -1,0 +1,12 @@
+.DS_Store
+assets/
+bob/bob
+build/
+lib/
+release/
+SDL2/
+soloud/
+*.xcodeproj
+game
+game.exe
+runner
